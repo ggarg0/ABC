@@ -1,0 +1,418 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import java.util.ArrayList;
+
+
+public class customer {
+	public int customerID;
+	String customerName;
+	int customerNo;
+	ArrayList<product> bookedProductList=new ArrayList<product>();
+	
+	public void addBookedProduct(product obj){
+		obj.setProductStatus("unavailable");
+		bookedProductList.add(obj);
+	}
+	public int getCustomerID() {
+		return customerID;
+	}
+	public void setCustomerID(int customerID) {
+		this.customerID = customerID;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+	public int getCustomerNo() {
+		return customerNo;
+	}
+	public void setCustomerNo(int customerNo) {
+		this.customerNo = customerNo;
+	}
+	public customer(int customerID, String customerName, int customerNo) {
+		super();
+		this.customerID = customerID;
+		this.customerName = customerName;
+		this.customerNo = customerNo;
+	}
+	
+	
+
+
+}
+
+
+
+class product {
+	public int productID;
+	String productName;
+	double productPrice;
+	String productStatus="available";
+	
+	public  String getProductStatus(String status) {
+		return productStatus;
+	}
+	public void setProductStatus(String productStatus) {
+		this.productStatus = productStatus;
+	}
+	public int quantity;
+	
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public int getProductID() {
+		return productID;
+	}
+	public void setProductID(int productID) {
+		this.productID = productID;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public double getProductPrice() {
+		return productPrice;
+	}
+	public void setProductPrice(double productPrice) {
+		this.productPrice = productPrice;
+	}
+	public product(int productID, String productName, double productPrice) {
+		super();
+		this.productID = productID;
+		this.productName = productName;
+		this.productPrice = productPrice;
+		
+
+	}
+	
+	
+	
+}
+
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+
+
+public class retailStore {
+		String storeName;
+		ArrayList<customer> custList=new ArrayList<customer>();
+		ArrayList<product> productList=new ArrayList<product>();
+		
+		public int generateCustomerID()
+		{
+			int count=0;
+			int custId=0;
+			if(custList.size()==0)
+				custId=1;
+			else
+			{
+				for(customer cust:custList)
+				{
+					count++;
+					if(count==custList.size())
+					{	
+						custId=cust.getCustomerID()+1;
+						break;
+					}
+				}
+			}
+			return custId;
+		}
+		public int generateProductID()
+		{
+			int count=0;
+			int prodId=0;
+			if(productList.size()==0)
+				prodId=1;
+			else
+			{
+				for(product prod:productList)
+				{
+					count++;
+					if(count==productList.size())
+					{
+						prodId=prod.getProductID()+1;
+						break;
+					}
+				}
+			}
+			return prodId;
+			
+		}
+		
+	public void addCustomer(String name,int contactNo)
+	{	
+		int custId=generateCustomerID();
+		customer c=new customer(custId,name,contactNo);
+			custList.add(c);
+			
+			
+	
+			
+	}
+		
+		public void addProduct(String name,String status,double price)
+			{
+				int pid=generateProductID();
+				
+				product p=new product(pid, name,price);
+				p.getProductStatus(status);
+				productList.add(p);
+				
+				
+				
+			}
+	
+		
+	public int checkProductAvailability(String ProductName)
+	{
+		int count=0;
+		for(product prod:productList)
+			if((prod.getProductName().equals(ProductName)) && (prod.getProductStatus(null).equals("Available")))
+				{count++;}
+		if(count>0)
+		{System.out.println("available");}
+		
+		return count;
+	}
+	
+	public String getStoreName() {
+			return storeName;
+		}
+
+		public void setStoreName(String storeName) {
+			this.storeName = storeName;
+		}
+
+		public retailStore(String storeName) {
+			super();
+			this.storeName = storeName;
+		}
+		
+		public void display() {
+			
+			for(customer cust:custList){
+				System.out.println("Name: " +cust.getCustomerName()+" Number :  "+cust.getCustomerNo()+" ID: "+cust.getCustomerID());
+			}
+			for(product pd:productList){
+				System.out.println("Pd Name  : "+pd.getProductName()+"Price  : "+pd.getProductPrice()+ " P ID   : "+pd.getProductID()+"    status   :"+pd.getProductStatus( null ));
+				
+			}
+		
+		}
+		
+		
+		public int bookProduct(int CustomerID,String ProductName, int NumberOfProduct) 
+		{
+			int availProduct=-1;
+			int count1=0;
+			int count2=0;
+			availProduct=checkProductAvailability(ProductName);
+			int count3=availProduct;
+			int count4=NumberOfProduct;
+			
+			loop:	for(customer cust:custList)
+				{
+					count1++;
+					if(cust.getCustomerID()==CustomerID)
+					{
+						for(product prod:productList)
+						{
+							count2++;
+							if(prod.getProductName().equals(ProductName))
+							{	
+								
+								if(availProduct<=NumberOfProduct)
+									{cust.addBookedProduct(prod);
+									count3--;
+								if(count3==0)
+  									break loop;
+								}
+								if(availProduct>NumberOfProduct)
+
+								{availProduct=NumberOfProduct;
+								cust.addBookedProduct(prod);
+									count4--;
+								if(count4==0)
+  									break loop;}
+								
+							}
+							else if(count2==productList.size())
+							{availProduct=0;break loop;}
+						}
+						
+					}
+					else if(count1==custList.size())
+						{availProduct=-1;break loop;}
+				}
+		return availProduct;
+		}
+		
+		public double calculateNetAmount(int customerID, double discount)
+		{
+				double cost=0;
+				for(customer cust:custList)
+					if(cust.getCustomerID()==customerID)
+						{
+							ArrayList<product> prodList1=cust.bookedProductList;
+							for(product p:prodList1)
+								{cost+=p.getProductPrice();
+								
+								}
+							
+							break;
+						}
+						
+				cost=cost-(cost*discount);
+				System.out.println("the amount is "+ cost);
+				return cost;
+		}
+			
+		
+}
+
+
+
+
+public class shopRem {
+
+	
+	public static void main(String[] args) throws IOException  {
+		// TODO Auto-generated method stub
+		
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		retailStore ob=new retailStore("Spencer");
+	/*	System.out.println("\t\t Welcome to TCS ILP LAB remedial Session");
+		System.out.println("\t Enter your name");
+		String name23=br.readLine();
+		System.out.println("\t Enter your Employment id");
+		int emp_no=Integer.parseInt(br.readLine());
+		System.out.println("Ready for the test!!");
+		System.out.println("Confirm with Yes or No");
+		String option=br.readLine().toLowerCase();
+		if(option.equals("yes"))             //
+			
+		{
+			System.out.println(((char) 27)+"[2J");
+		}
+		else 
+		{
+			System.out.println("TCS to you : You have to give the test else you are fired");
+			System.out.println("Here your test starts");
+		}
+		System.out.println("\t\t\t\tHere is the question for you"+"Mr/Miss"+name23+" ("+emp_no+")");
+		System.out.println("Visit 172.0.0.10/ps-1");
+		System.out.println("Question Solved: Yes or No");
+		String solve=br.readLine().toLowerCase();
+		if(solve.equals("yes")){
+			System.out.println("Would you like to run your code? Confirm with Yes or No only");
+			String con=br.readLine();
+			if(con.equals("yes")){
+				System.out.println(((char) 27)+"[2J");
+			}
+			else 
+			{
+				System.out.println("You have to run your code else No salary!!!");
+				System.out.println("We are waiting for your code");
+				
+			}
+		}
+		else {
+		
+		
+			System.out.println("No alternate option, you have to solve ");
+		}
+		System.out.println(((char) 27)+"[2J");*/
+		
+		int ass_id=0;
+		String ass_name="",ass="";
+		
+		int number;
+		
+	
+	
+		int ch;
+		do
+		{
+			
+			System.out.println("\t\t\tEnter the choice:");
+			System.out.println("\n\t1.to add customer\t2.add product\n\t3.check product availability\n\t4.display\n\t5.book product\n\t6.calculate net amount\n\t7.Exit");			
+		     ch=Integer.parseInt(br.readLine());
+			switch(ch)
+			{
+				case 1:		System.out.println("------customer Addition-------");
+						System.out.println("Enter the name of customer:");
+						ass_name=br.readLine();
+						System.out.println("enter the contact number");
+						number=Integer.parseInt(br.readLine());
+						
+						ob.addCustomer(ass_name,number);
+						break;
+				
+				case 2:		System.out.println("------product Addition-------");
+						System.out.println("Enter product name:");
+						ass_name=br.readLine();
+						System.out.println("Enter the price of product:");
+						double price=Double.parseDouble(br.readLine());
+						System.out.println("enter the status");
+						ass=br.readLine();
+						
+						ob.addProduct(ass_name,ass, price);
+					
+						break;
+						
+				case 3:		System.out.println("------check Availability-------");
+						System.out.println("Enter the product name:");
+						ass_name=br.readLine();
+					
+						int number=ob.checkProductAvailability(ass_name);
+						System.out.println("available product="+number);
+						break;
+				case 4:		System.out.println("------Display-------");
+						ob.display();
+						break;
+				case 5:		System.out.println("------booked Product-------");
+						System.out.println("Enter the customer id:");
+						ass_id=Integer.parseInt(br.readLine());
+						System.out.println("enter the product name");
+						ass_name=br.readLine();
+						System.out.println("Enter the number of products:");
+						number=Integer.parseInt(br.readLine());
+						ob.bookProduct(ass_id, ass_name, number);
+						break;
+				case 6:		System.out.println("------calculate cost-------");
+						System.out.println("Enter the customer id:");
+						ass_id=Integer.parseInt(br.readLine());
+						System.out.println("Enter the discount:");
+						double discount=Double.parseDouble(br.readLine());
+						
+						double cost=ob.calculateNetAmount(ass_id, discount);
+						System.out.println("Total cost="+cost);
+						break;
+			
+				case 7:		System.out.println("Sorry");
+						break;
+						
+				default:System.out.println("Invalid option!!");	
+						
+		
+		
+		
+		
+	}
+
+		}while(ch!=7);
+		}
+	}
