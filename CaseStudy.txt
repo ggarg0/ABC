@@ -1,4 +1,4 @@
-The Spencer Home Appliances shop wants to automate the following processes: 
+The Home Appliances shop wants to automate the following processes: 
 · Booking a product by customer, 
 · Bill generation for customer 
 · Inventory status check and updation 
